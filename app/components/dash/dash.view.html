@@ -1,0 +1,32 @@
+<c3chart bindto-id="chart1"
+         show-labels="false"
+         show-subchart='true'
+         subchart-on-brush-function='dash.showBrush'
+         callback-function='dash.handleCallbackChart'
+         axis-extent="dash.axisExtent">
+    <chart-column column-id="line1"
+                  column-name="Line 1"
+                  column-color="green"
+                  column-values="30,200,100,400,150,250"
+                  column-type="area-spline"/>
+    <chart-points point-radius="5"
+                  show-point="true"
+                  point-expand-enabled="true"
+                  point-expand-radius="10"/>
+    <chart-tooltip show-tooltip="true" content-format-function="contentFormatFunction"/>
+    
+</c3chart>
+<c3chart bindto-id="chart2"
+         show-labels="false"
+         callback-function='dash.handleCallbackChart2'
+         axis-extent="dash.axisExtent">
+    <chart-column column-id="line1"
+                  column-name="Line 1"
+                  column-color="green"
+                  column-values="30,200,100,400,150,250"
+                  column-type="area-spline"/>
+    <chart-points point-radius="5"
+                  show-point="true"
+                  point-expand-enabled="true"
+                  point-expand-radius="10"/>
+</c3chart>
