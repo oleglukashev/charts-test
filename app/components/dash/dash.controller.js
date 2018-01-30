@@ -2,26 +2,42 @@ export default class DashCtrl {
   constructor() {
     'ngInject';
 
-    this.axisExtent = [0,5];
-    this.theChart = null;
-    this.theChart2 = null;
+    this.axisExtent = null;
+    this.capacityChart = null;
+    this.viewersChart = null;
 
-    this.handleCallbackChart = (chartObj) => {
-      this.theChart = chartObj;
-      this.theChart.legend.hide();
+    this.handleCapacityChartCallback = (chart) => {
+      this.capacityChart = chart;
+      this.capacityChart.legend.hide();
     }
 
-    this.handleCallbackChart2 = (chartObj) => {
-      this.theChart2 = chartObj;
-      this.theChart2.legend.hide();
+    this.handleViewersChartCallback = (chart) => {
+      this.viewersChart = chart;
+      this.viewersChart.legend.hide();
     }
 
-    this.showBrush = (domain) => {
-      this.theChart2.fastZoom(domain);
+    this.handleBrushCallback = (domain) => {
+      this.axisExtent = domain;
+
+      if (this.viewersChart) {
+        this.viewersChart.fastZoom(domain);
+      }
     }
     
     this.contentFormatFunction = () => {
-      return '<h1 class="chart-tooltip">C3JS AngularJS Directives - Examples</h1>';
+      return '<h1 class="chart-tooltip">test</h1>';
+    }
+
+    this.onResizedCallback = () => {
+      // temporary fix of https://github.com/c3js/c3/issues/2275
+
+      if (this.capacityChart) {
+        this.capacityChart.fastZoom(this.axisExtent);
+      }
+
+      if (this.viewersChart) {
+        this.viewersChart.fastZoom(this.axisExtent);
+      }
     }
   }
 }
