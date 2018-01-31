@@ -2634,7 +2634,7 @@ function ChartPoints () {
             if (!point.focus) {
                 pie.focus = {"expand":{}};
             }
-            point.focus.expand.r = parseInt(attrs.pointFocusRadius);
+            point.focus.expand.r = parseInt(attrs.pointExpandRadius);
         }
         if (attrs.pointRadius) {
             point.r = parseInt(attrs.pointRadius);
