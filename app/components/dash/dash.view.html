@@ -1,70 +1,78 @@
-<c3chart bindto-id='capacityChart'
-         show-labels='false'
-         show-subchart='true'
-         subchart-on-brush-function='dash.handleZoomCapacityChart'
-         on-zoom-end-function='dash.handleZoomCapacityChart'
-         callback-function='dash.handleCapacityChart'
-         axis-extent='dash.axisExtent'
-         enable-zoom='true'
-         ng-if='dash.isLoaded'
-         chart-data='dash.datapoints'
-         chart-columns='dash.datacolumns'
-         chart-x='dash.datax'>
-    <chart-axis>
-      <chart-axis-x axis-id='x' axis-type='timeseries' axis-x-format="%Y-%m-%d %H:%M:%S">
-        <chart-axis-x-tick tick-format-time="%d. %b"/>
-      </chart-axis-x>
-    </chart-axis>
-    <chart-size chart-height='150' />
-    <chart-events on-resized='dash.handleResized' />
-    <chart-tooltip show-tooltip='true' content-format-function='dash.contentFormatFunction' />
-    <chart-grid-optional axis-id='y' grid-value='200' grid-class='cdn-max' grid-text='{{ dash.getCdnMaxGridText()}}' />
-    <chart-grid-optional axis-id='y' grid-value='100' grid-class='p2p-max' grid-text='{{ dash.getP2pMaxGridText() }}' />
-</c3chart>
+<div class='container'>
+  <div class='form-group row justify-content-end'>
+    <label for='period' class='col-1 col-2-sm col-form-label'>Select: </label>
+    <div class='col-3 col-4-sm'>
+      <select class='form-control ng-valid ng-not-empty ng-dirty ng-valid-parse ng-touched'
+              ng-model='dash.period'
+              ng-change='dash.loadData()'
+              name='period'>
+        <option ng-repeat='option in dash.periodOptions' ng-value='option.value'>{{ option.name }}</option>
+      </select>
+    </div>
+  </div>
 
-<!-- <c3chart bindto-id='viewersChart'
-         show-labels='false'
-         callback-function='dash.handleViewersChart'
-         on-zoom-end-function='dash.handleZoomViewersChart'
-         axis-extent='dash.axisExtent'
-         enable-zoom='true'>
-    <chart-column column-id='line1'
-                  column-name='Line 1'
-                  column-color='green'
-                  column-values='30,200,100,400,150,250'
-                  column-type='area-spline' />
-    <chart-points point-radius='5'
-                  show-point='true'
-                  point-expand-enabled='true'
-                  point-expand-radius='10' />
-    <chart-size chart-height='150' />
-    <chart-tooltip show-tooltip='true' content-format-function='dash.contentFormatFunction' />
-</c3chart> -->
+  <h2>CAPACITY OFFLOAD</h2>
 
-<c3chart bindto-id="chartRegionSample">
-    <chart-column column-id="line1"
-                  column-name="Line 1"
-                  column-color="green"
-                  column-values="2010,2011,2012,2013,2014,2015"
-                  column-type="line"/>
-    <chart-column column-id="x1"
-                  column-name="Line 1"
-                  column-color="green"
-                  column-values="30,200,100,400,150,250"
-                  column-type="line"/>
-    <chart-column column-id="line2"
-                  column-name="Line 1"
-                  column-color="green"
-                  column-values="2011,2012,2013,2014,2015"
-                  column-type="line"/>
-    <chart-column column-id="x2"
-                  column-name="Line 1"
-                  column-color="green"
-                  column-values="250,150,300,250,200"
-                  column-type="line"/>
-    <chart-points point-radius="5"
-                  show-point="true"
-                  point-expand-enabled="true"
-                  point-expand-radius="10"/>
-    <chart-axes values-xs="x1:line1,x2:line2" values-Xs=''></chart-axes>
-</c3chart>
+  <c3chart bindto-id='capacityChart'
+           show-labels='false'
+           show-subchart='true'
+           subchart-on-brush-function='dash.handleZoomCapacityChart'
+           on-zoom-end-function='dash.handleZoomCapacityChart'
+           callback-function='dash.handleCapacityChart'
+           axis-extent='dash.axisExtent'
+           enable-zoom='true'
+           ng-if='dash.isLoaded'
+           chart-data='dash.capacityDatapoints'
+           chart-columns='dash.capacityColumns'
+           chart-x='dash.datax'>
+      <chart-axis>
+        <chart-axis-x axis-id='x' axis-type='timeseries' axis-x-format="%Y-%m-%d %H:%M:%S">
+          <chart-axis-x-tick tick-format-time="%d. %b"/>
+        </chart-axis-x>
+        <chart-axis-y axis-id='y'>
+          <chart-axis-y-tick tick-format-function='dash.contentYTickFunction' />
+        </chart-axis-y>
+      </chart-axis>
+      <chart-size chart-height='180' />
+      <chart-events on-resized='dash.handleResized' />
+      <chart-tooltip show-tooltip='true' content-format-function='dash.contentCapacityChartFunction' />
+      <chart-points point-radius='0'
+                    show-point='true'
+                    point-expand-enabled='true'
+                    point-expand-radius='4' />
+      <chart-grid-optional axis-id='y'
+                           grid-value='{{ dash.cdnMax }}'
+                           grid-class='cdn-max'
+                           grid-text='{{ dash.getCdnMaxGridText()}}' />
+      <chart-grid-optional axis-id='y'
+                           grid-value='{{ dash.p2pMax }}'
+                           grid-class='p2p-max'
+                           grid-text='{{ dash.getP2pMaxGridText() }}' />
+  </c3chart>
+
+  <h2>CONCURRENT VIEWERS</h2>
+
+  <c3chart bindto-id='viewersChart'
+           show-labels='false'
+           callback-function='dash.handleViewersChart'
+           on-zoom-end-function='dash.handleZoomViewersChart'
+           axis-extent='dash.axisExtent'
+           enable-zoom='true'
+           ng-if='dash.isLoaded'
+           chart-data='dash.viewersDatapoints'
+           chart-columns='dash.viewersColumns'
+           chart-x='dash.datax'>
+      <chart-axis>
+        <chart-axis-x axis-id='x' axis-type='timeseries' axis-x-format="%Y-%m-%d %H:%M:%S">
+          <chart-axis-x-tick tick-format-time="%d. %b"/>
+        </chart-axis-x>
+      </chart-axis>
+      <chart-tooltip show-tooltip='true' content-format-function='dash.contentViewersChartFunction' />
+      <chart-size chart-height='180' />
+      <chart-events on-resized='dash.handleResized' />
+      <chart-points point-radius='0'
+                    show-point='true'
+                    point-expand-enabled='true'
+                    point-expand-radius='4' />
+  </c3chart>
+</div>

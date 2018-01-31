@@ -9,4 +9,71 @@
     left: 0;
     z-index: 1;
   }
+
+  .c3-tooltip-container {
+    .c3-tooltip-popup {
+      padding: $padding;
+      font-size: 12px;
+
+      h4 {
+        margin-bottom: $padding * 1.5;
+      }
+
+      p {
+        &.tooltip-cdn,
+        &.tooltip-p2p,
+        &.tooltip-viewers {
+          text-transform: uppercase;
+        }
+
+        &.tooltip-cdn span {
+          color: $light-blue;
+
+          &.tooltip-mark {
+            background-color: $berry;
+          }
+        }
+
+        &.tooltip-p2p span {
+          color: $berry;
+
+          &.tooltip-mark {
+            background-color: $light-blue;
+          }
+        }
+
+        &.tooltip-viewers span {
+          color: $light-blue;
+
+          &.tooltip-mark {
+            background-color: $deep-orange;
+          }
+        }
+
+        &.tooltip-sum span {
+          color: $green;
+        }
+
+        &.tooltip-sprike span {
+          color: $light-blue;
+        }
+
+        span {
+          text-transform: capitalize;
+        }
+
+        .tooltip-mark {
+          display: inline-block;
+          width: 6px;
+          height: 6px;
+          margin-right: $padding;
+          border-radius: 3px;
+        }
+      }
+    }
+  }
+}
+
+#viewersChart {
+  margin-left: 10px;
 }

@@ -1398,12 +1398,12 @@ c3_chart_internal_fn.updateSizes = function () {
 
     // for main
     $$.margin = config.axis_rotated ? {
-        top: 4,
+        top: 20,
         right: hasArc ? 0 : $$.getCurrentPaddingRight(),
         bottom: $$.getHorizontalAxisHeight('y') + legendHeightForBottom + $$.getCurrentPaddingBottom(),
         left: subchartHeight + (hasArc ? 0 : $$.getCurrentPaddingLeft())
     } : {
-        top: 4, // for top tick text
+        top: 20, // for top tick text
         right: hasArc ? 0 : $$.getCurrentPaddingRight(),
         bottom: xAxisHeight,
         left: hasArc ? 0 : $$.getCurrentPaddingLeft()
@@ -4296,16 +4296,20 @@ c3_chart_fn.fastZoom = function (domain) {
     this.zoom(domain, true);
 };
 
-
 c3_chart_fn.zoom.enable = function (enabled) {
     var $$ = this.internal;
     $$.config.zoom_enabled = enabled;
     $$.updateAndRedraw();
 };
-c3_chart_fn.unzoom = function () {
+
+c3_chart_fn.unzoom = function (isFast) {
     var $$ = this.internal;
     $$.brush.clear().update();
-    $$.redraw({ withUpdateXDomain: true });
+    $$.redraw({ withTransition: !isFast, withUpdateXDomain: true });
+};
+
+c3_chart_fn.fastUnzoom = function () {
+    this.unzoom(true);
 };
 
 c3_chart_fn.zoom.max = function (max) {
