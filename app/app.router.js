@@ -4,7 +4,10 @@ export default function routes($stateProvider, $urlRouterProvider, $locationProv
   $stateProvider
     .state('app', {
       abstract: true,
-      template: '<div ui-view></div>',
+      templateUrl: 'layout.view.html',
+      resolve: {
+        auth: User => User.auth(),
+      },
     });
 
   $urlRouterProvider.otherwise('/');

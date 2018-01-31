@@ -1,0 +1,12 @@
+.c3 {
+  .c3-ygrid-line {
+    stroke: red;
+  }
+
+  .c3-subchart {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+  }
+}
