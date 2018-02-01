@@ -1391,7 +1391,7 @@ c3_chart_internal_fn.updateSizes = function () {
         legendHeightForBottom = $$.isLegendRight || $$.isLegendInset ? 0 : legendHeight,
         hasArc = $$.hasArcType(),
         xAxisHeight = config.axis_rotated || hasArc ? 0 : $$.getHorizontalAxisHeight('x'),
-        subchartHeight = config.subchart_show && !hasArc ? config.subchart_size_height + xAxisHeight : 0;
+        subchartHeight = config.subchart_show && !hasArc ? $$.height2 : 0;
 
     $$.currentWidth = $$.getCurrentWidth();
     $$.currentHeight = $$.getCurrentHeight();
@@ -1443,7 +1443,7 @@ c3_chart_internal_fn.updateSizes = function () {
     }
 
     $$.width2 = config.axis_rotated ? $$.margin.left - $$.rotated_padding_left - $$.rotated_padding_right : $$.width;
-    $$.height2 = config.axis_rotated ? $$.height : $$.currentHeight - $$.margin2.top - $$.margin2.bottom;
+    $$.height2 = config.subchart_size_height;
     if ($$.width2 < 0) {
         $$.width2 = 0;
     }
@@ -1910,15 +1910,15 @@ c3_chart_internal_fn.transformAll = function (withTransition, transitions) {
 c3_chart_internal_fn.updateSvgSize = function () {
     var $$ = this;
     $$.svg.attr('width', $$.currentWidth).attr('height', $$.currentHeight);
-    $$.svg.selectAll(['#' + $$.clipId, '#' + $$.clipIdForGrid]).select('rect').attr('width', $$.currentWidth).attr('height', $$.height);
+    $$.svg.selectAll(['#' + $$.clipId, '#' + $$.clipIdForGrid]).select('rect').attr('width', $$.getBodyWidth()).attr('height', $$.height);
     $$.svg.select('#' + $$.clipIdForXAxis).select('rect').attr('x', $$.getXAxisClipX.bind($$)).attr('y', $$.getXAxisClipY.bind($$)).attr('width', $$.getXAxisClipWidth.bind($$)).attr('height', $$.getXAxisClipHeight.bind($$));
     $$.svg.select('#' + $$.clipIdForYAxis).select('rect').attr('x', $$.getYAxisClipX.bind($$)).attr('y', $$.getYAxisClipY.bind($$)).attr('width', $$.getYAxisClipWidth.bind($$)).attr('height', $$.getYAxisClipHeight.bind($$));
     $$.svg.select('.' + CLASS.zoomRect).attr('width', $$.currentWidth).attr('height', $$.height);
 
     if ($$.svgSubchart) {
         var brush = $$.svgSubchart.select(".c3-brush .background");
-        $$.svgSubchart.attr('width', $$.currentWidth).attr('height', 60);
-        $$.svgSubchart.select('#' + $$.clipIdForSubchart).select('rect').attr('width', $$.currentWidth).attr('height', brush.size() ? brush.attr('height') : 0);
+        $$.svgSubchart.attr('width', $$.getBodyWidth()).attr('height', $$.height2);
+        $$.svgSubchart.select('#' + $$.clipIdForSubchart).select('rect').attr('width', $$.getBodyWidth()).attr('height', brush.size() ? brush.attr('height') : 0);
     }
     // MEMO: parent div's height will be bigger than svg when <!DOCTYPE html>
     $$.selectChart.style('max-height', $$.currentHeight + "px");
@@ -5109,7 +5109,7 @@ c3_chart_internal_fn.getDefaultConfig = function () {
         data_empty_label_text: "",
         // subchart
         subchart_show: false,
-        subchart_size_height: 60,
+        subchart_size_height: 40,
         subchart_axis_x_show: true,
         subchart_onbrush: function subchart_onbrush() {},
         // color
@@ -7681,7 +7681,7 @@ c3_chart_internal_fn.updateScales = function () {
     });
     $$.y = $$.getY($$.yMin, $$.yMax, forInit ? config.axis_y_default : $$.y.domain());
     $$.y2 = $$.getY($$.yMin, $$.yMax, forInit ? config.axis_y2_default : $$.y2.domain());
-    $$.subX = $$.getX($$.xMin, $$.xMax + asHalfPixel($$.margin.left), $$.orgXDomain, function (d) {
+    $$.subX = $$.getX($$.xMin, $$.getBodyWidth(), $$.orgXDomain, function (d) {
         return d % 1 ? 0 : $$.subXAxis.tickOffset();
     });
     $$.subY = $$.getY($$.subYMin, $$.subYMax, forInit ? config.axis_y_default : $$.subY.domain());
@@ -8495,8 +8495,34 @@ c3_chart_internal_fn.getParentRectValue = function (key) {
     }
     return v;
 };
+
+c3_chart_internal_fn.getBodyRectValue = function (key) {
+    var parent = this.selectChart.node(),
+        v;
+    while (parent) {
+        try {
+            v = parent.getBoundingClientRect()[key];
+        } catch (e) {
+            if (key === 'width') {
+                // In IE in certain cases getBoundingClientRect
+                // will cause an "unspecified error"
+                v = parent.offsetWidth;
+            }
+        }
+        if (parent.tagName === 'BODY') {
+            break;
+        }
+        parent = parent.parentNode;
+    }
+
+    return v;
+};
+
 c3_chart_internal_fn.getParentWidth = function () {
     return this.getParentRectValue('width');
+};
+c3_chart_internal_fn.getBodyWidth = function () {
+    return this.getBodyRectValue('width');
 };
 c3_chart_internal_fn.getParentHeight = function () {
     var h = this.selectChart.style('height');
@@ -8556,6 +8582,7 @@ c3_chart_internal_fn.initBrush = function () {
     var $$ = this,
         d3 = $$.d3;
     $$.brush = d3.svg.brush().on("brush", function () {
+        $$.updateSubchartSides();
         $$.redrawForBrush();
     });
     $$.brush.update = function () {
@@ -8590,29 +8617,45 @@ c3_chart_internal_fn.initSubchart = function () {
 
 
     // Define g for chart area
-    context.append('g').attr("clip-path", $$.clipPathForSubchart).attr('class', 'qwe');
+    context.append('g').attr("clip-path", $$.clipPathForSubchart).attr('class', 'c3-sides');
     
-    context.select('.qwe').append('rect')
-                .attr('class', 'left')
+    context.select('.c3-sides').append('rect')
+                .attr('class', 'c3-side w')
                 .attr('x', 0)
                 .attr('y', 0)
-                .attr('height', 60);
+                .attr('height', $$.height2);
 
-    context.select('.qwe').append('rect')
-                .attr('class', 'right')
+    context.select('.c3-sides').append('rect')
+                .attr('class', 'c3-side e')
                 .attr('x', 0)
                 .attr('y', 0)
-                .attr('height', 60);
-
-
+                .attr('height', $$.height2);
 
     // Add extent rect for Brush
     context.append("g").attr("clip-path", $$.clipPath).attr("class", CLASS.brush).call($$.brush);
 
+
+    var resizePathD = 'M-3,10 3 10 3 30 -3 30 -3 10ZM-1,12V28M1,12V28';
+    $$.svgSubchart.select('.resize.e').append('path').attr('d', resizePathD)
+    $$.svgSubchart.select('.resize.w').append('path').attr('d', resizePathD)
+
     // ATTENTION: This must be called AFTER chart added
     // Add Axis
-    //$$.axes.subx = context.append("g").attr("class", CLASS.axisX).attr("transform", $$.getTranslate('subx')).attr("clip-path", config.axis_rotated ? "" : $$.clipPathForXAxis).style("visibility", config.subchart_axis_x_show ? visibility : 'hidden');
+    $$.axes.subx = context.append("g").attr("class", CLASS.axisX).attr("transform", $$.getTranslate('subx')).attr("clip-path", config.axis_rotated ? "" : $$.clipPathForXAxis).style("visibility", config.subchart_axis_x_show ? visibility : 'hidden');
 };
+
+c3_chart_internal_fn.updateSubchartSides = function() {
+    // recalculate subchart sides
+    var $$ = this;
+
+    if ($$.svgSubchart) {
+        var x = parseFloat($$.svgSubchart.select('.extent').attr('x'));
+        var width = parseFloat($$.svgSubchart.select('.extent').attr('width'));
+        $$.svgSubchart.select('.c3-side.w').attr('x', 0).attr('width', width ? x : 0);
+        $$.svgSubchart.select('.c3-side.e').attr('x', width ? (x + width) : 0).attr('width', width ? $$.getBodyWidth() : 0);
+    }
+}
+
 c3_chart_internal_fn.updateTargetsForSubchart = function (targets) {
     var $$ = this,
         context = $$.context,
@@ -8714,9 +8757,9 @@ c3_chart_internal_fn.redrawSubchart = function (withSubchart, transitions, durat
             $$.redrawBarForSubchart(drawBarOnSub, duration, duration);
             $$.redrawLineForSubchart(drawLineOnSub, duration, duration);
             $$.redrawAreaForSubchart(drawAreaOnSub, duration, duration);
-
-            $$.svgSubchart.select('.context')
         }
+
+        $$.updateSubchartSides();
     }
 };
 c3_chart_internal_fn.redrawForBrush = function () {
@@ -8729,6 +8772,7 @@ c3_chart_internal_fn.redrawForBrush = function () {
         withUpdateXDomain: true,
         withDimension: false
     });
+
     $$.config.subchart_onbrush.call($$.api, x.orgDomain());
 };
 c3_chart_internal_fn.transformContext = function (withTransition, transitions) {

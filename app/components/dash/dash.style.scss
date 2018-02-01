@@ -1,6 +1,17 @@
 .c3 {
-  .c3-ygrid-line {
-    stroke: red;
+  .c3-ygrid-lines {
+    .p2p-max line,
+    .cdn-max line {
+      stroke-dasharray: 3,3;
+    }
+
+    .p2p-max line {
+      stroke: $berry;
+    }
+
+    .cdn-max line {
+      stroke: $light-blue;
+    }
   }
 
   .c3-subchart {
@@ -8,6 +19,11 @@
     bottom: 0;
     left: 0;
     z-index: 1;
+
+    .resize path {
+      stroke: $light-grey;
+      fill: #fff;
+    }
   }
 
   .c3-tooltip-container {
@@ -20,6 +36,8 @@
       }
 
       p {
+        margin-bottom: $padding * 0.5;
+
         &.tooltip-cdn,
         &.tooltip-p2p,
         &.tooltip-viewers {
@@ -27,7 +45,7 @@
         }
 
         &.tooltip-cdn span {
-          color: $light-blue;
+          color: $berry;
 
           &.tooltip-mark {
             background-color: $berry;
@@ -35,7 +53,7 @@
         }
 
         &.tooltip-p2p span {
-          color: $berry;
+          color: $light-blue;
 
           &.tooltip-mark {
             background-color: $light-blue;
@@ -43,7 +61,7 @@
         }
 
         &.tooltip-viewers span {
-          color: $light-blue;
+          color: $deep-orange;
 
           &.tooltip-mark {
             background-color: $deep-orange;
@@ -70,6 +88,27 @@
           border-radius: 3px;
         }
       }
+    }
+  }
+
+  .c3-chart-lines .c3-shapes.c3-areas path {
+    opacity: 0.5 !important;
+  }
+
+  .c3-side {
+    fill: #fff;
+    fill-opacity: .8;
+  }
+
+  .c3-axis path {
+    stroke: $light-grey;
+  }
+
+  .tick {
+    fill: $light-grey;
+
+    line {
+      stroke: $light-grey;
     }
   }
 }
