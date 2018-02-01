@@ -8635,7 +8635,7 @@ c3_chart_internal_fn.initSubchart = function () {
     context.append("g").attr("clip-path", $$.clipPath).attr("class", CLASS.brush).call($$.brush);
 
 
-    var resizePathD = 'M-3,10 3 10 3 30 -3 30 -3 10ZM-1,12V28M1,12V28';
+    var resizePathD = 'M-3,9 3 9 3 29 -3 29 -3 9ZM-1,11V27M1,11V27';
     $$.svgSubchart.select('.resize.e').append('path').attr('d', resizePathD)
     $$.svgSubchart.select('.resize.w').append('path').attr('d', resizePathD)
 
