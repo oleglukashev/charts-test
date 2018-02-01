@@ -12,7 +12,7 @@ export default class Auidience {
     const deferred = this.$q.defer();
 
     if (!sessionToken || !from || !to) {
-      deferred.promise;
+      return deferred.promise;
     }
 
     return this.$http({

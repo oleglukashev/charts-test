@@ -12,7 +12,7 @@ export default class Bandwidth {
     const deferred = this.$q.defer();
 
     if (!sessionToken || !from || !to) {
-      deferred.promise;
+      return deferred.promise;
     }
 
     return this.$http({
