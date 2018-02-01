@@ -1,10 +1,11 @@
 export default class User {
-  constructor($http, $q, $window) {
+  constructor($http, $q, $window, AppConstants) {
     'ngInject';
 
     this.$http = $http;
     this.$window = $window;
     this.$q = $q;
+    this.AppConstants = AppConstants;
   }
 
   auth() {
@@ -16,7 +17,7 @@ export default class User {
     }
 
     return this.$http({
-      url: `http://localhost:3000/auth`,
+      url: `${this.AppConstants.serverDomain}/auth`,
       method: 'POST',
       data: {
         identifiant: 'urtoob',
@@ -28,9 +29,7 @@ export default class User {
       }
 
       return deferred.resolve(true);
-    }, (error) => {
-      return deferred.resolve(false);
-    });
+    }, () => deferred.resolve(false));
   }
 
   logout() {
@@ -42,46 +41,14 @@ export default class User {
     }
 
     return this.$http({
-      url: `http://localhost:3000/logout`,
+      url: `${this.AppConstants.serverDomain}/logout`,
       method: 'POST',
       data: {
         session_token: sessionToken,
       },
-    }).then((sessionToken) => {
+    }).then(() => {
       this.$window.localStorage.setItem('session_token', null);
       return deferred.resolve(true);
-    }, (error) => {
-      return deferred.resolve(false);
-    });
+    }, () => deferred.resolve(false));
   }
-
-  // logout() {
-  //   this.current = null;
-  //   this.JWT.destroy();
-  //   this.removeDefaultCompany();
-  //   this.$state.go('auth.login', null, { reload: true });
-  // }
-
-  // getInfo() {
-  //   let deferred = this.$q.defer();
-
-    
-
-  //   return deferred.promise;
-  // }
-
-  // ensureAuth() {
-  //   const deferred = this.$q.defer();
-
-  //   this.verifyAuth().then((authValid) => {
-  //     if (authValid === true) {
-  //       deferred.resolve(true);
-  //     } else {
-  //       this.$state.go('auth.login');
-  //       deferred.resolve(false);
-  //     }
-  //   });
-
-  //   return deferred.promise;
-  // }
 }

@@ -6,11 +6,11 @@
     }
 
     .p2p-max line {
-      stroke: $berry;
+      stroke: $light-blue;
     }
 
     .cdn-max line {
-      stroke: $light-blue;
+      stroke: $berry;
     }
   }
 
@@ -19,7 +19,7 @@
     bottom: 0;
     left: 0;
     z-index: 1;
-    border: 1px solid $light-grey;
+    box-shadow: 1px 3px 3px 3px $light-grey;
     background-color: #fff;
 
     .resize path {

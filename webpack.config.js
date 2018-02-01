@@ -13,7 +13,7 @@ module.exports = {
       'angular-ui-bootstrap',
       'angular-ui-router',
       'd3',
-    ]
+    ],
   },
 
   // resolve: {
@@ -33,21 +33,20 @@ module.exports = {
   plugins: [
     new webpack.ProvidePlugin({
       'c3': path.resolve(__dirname, 'app/assets/js/c3.js'),
-      'd3': 'd3'
+      'd3': 'd3',
     }),
     new Extract('app.css'),
     new webpack.optimize.CommonsChunkPlugin({
       name     : 'vendor',
       chunks   : ['app'],
       filename : 'vendor.js',
-      minChunks: Infinity
+      minChunks: Infinity,
     }),
     new webpack.DefinePlugin({
-      
     }),
     new ngAnnotatePlugin({
-      add: true
-    })
+      add: true,
+    }),
   ],
 
   module: {
@@ -72,7 +71,7 @@ module.exports = {
       {
         test: /\.html$/,
         loader: 'raw-loader'
-      }
+      },
     ]
   }
 }

@@ -2,6 +2,7 @@ import angular from 'angular';
 
 export default angular.module('app.constants', [])
   .constant('AppConstants', {
+    serverDomain: 'http://localhost:3000',
     colors: {
       lightBlue: '#4FBCF2',
       darkBlue: '#3AA0D3',

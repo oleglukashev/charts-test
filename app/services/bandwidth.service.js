@@ -1,10 +1,11 @@
 export default class Bandwidth {
-  constructor($http, $q, $window) {
+  constructor($http, $q, $window, AppConstants) {
     'ngInject';
 
     this.$http = $http;
     this.$window = $window;
     this.$q = $q;
+    this.AppConstants = AppConstants;
   }
 
   loadData(from, to) {
@@ -16,17 +17,13 @@ export default class Bandwidth {
     }
 
     return this.$http({
-      url: `http://localhost:3000/bandwidth`,
+      url: `${this.AppConstants.serverDomain}/bandwidth`,
       method: 'POST',
       data: {
         session_token: sessionToken,
-        from: from,
-        to: to,
+        from,
+        to,
       },
-    }).then((result) => {
-      return result;
-    }, (error) => {
-      return error;
-    });
+    }).then(result => result, error => error);
   }
 }

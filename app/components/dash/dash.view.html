@@ -1,10 +1,40 @@
 <div class='container'>
-  <div class='form-group row justify-content-end'>
-    <label for='period' class='col-1 col-2-sm col-form-label'>Select: </label>
-    <div class='col-3 col-4-sm'>
+  <div class='row mb-4 justify-content-end'>
+    <div class='input-group col-6 col-sm-6 col-md-3'>
+      <input type='text'
+             class='form-control'
+             uib-datepicker-popup='{{ dash.format }}'
+             ng-model='dash.fromDate'
+             ng-change='dash.loadData()'
+             is-open='dash.fromDatePickerOpened'
+             datepicker-options='dash.dateOptions'
+             close-text='Close' />
+      <div class='input-group-append'>
+        <button class='btn btn-outline-secondary'
+                ng-click='dash.openFromDatePicker()'
+                type='button'>FROM</button>
+      </div>
+    </div>
+    <div class='input-group col-6 col-sm-6 col-md-3'>
+      <input type='text'
+             class='form-control'
+             uib-datepicker-popup='{{ dash.format }}'
+             ng-model='dash.toDate'
+             ng-change='dash.loadData()'
+             is-open='dash.toDatePickerOpened'
+             datepicker-options='dash.dateOptions'
+             close-text='Close' />
+      <div class='input-group-append'>
+        <button class='btn btn-outline-secondary'
+                ng-click='dash.openToDatePicker()'
+                type='button'>TO</button>
+      </div>
+    </div>
+    <label for='period' class='col-1 d-none d-md-block col-form-label'>Period:</label>
+    <div class='col-2 d-none d-md-block'>
       <select class='form-control ng-valid ng-not-empty ng-dirty ng-valid-parse ng-touched'
               ng-model='dash.period'
-              ng-change='dash.loadData()'
+              ng-change='dash.changeDatesAndLoadData()'
               name='period'>
         <option ng-repeat='option in dash.periodOptions' ng-value='option.value'>{{ option.name }}</option>
       </select>
@@ -21,12 +51,15 @@
            callback-function='dash.handleCapacityChart'
            axis-extent='dash.axisExtent'
            enable-zoom='true'
-           ng-if='dash.isLoaded'
+           ng-if='dash.capacityChartIsLoaded'
            chart-data='dash.capacityDatapoints'
            chart-columns='dash.capacityColumns'
-           chart-x='dash.datax'>
+           chart-x='dash.datax'
+           class='ngfade'>
       <chart-axis>
-        <chart-axis-x axis-id='x' axis-type='timeseries' axis-x-format="%Y-%m-%d %H:%M:%S">
+        <chart-axis-x axis-id='x'
+                      axis-type='timeseries'
+                      axis-x-format="%Y-%m-%d %H:%M:%S">
           <chart-axis-x-tick tick-format-time="%d. %b"/>
         </chart-axis-x>
         <chart-axis-y axis-id='y'>
@@ -35,7 +68,9 @@
       </chart-axis>
       <chart-size chart-height='180' />
       <chart-events on-resized='dash.handleResized' />
-      <chart-tooltip show-tooltip='true' content-format-function='dash.contentCapacityChartFunction' />
+      <chart-tooltip show-tooltip='true'
+                     content-format-function='dash.contentCapacityChartFunction'
+                     position-function='dash.tooltipPositionFunction' />
       <chart-points point-radius='0'
                     show-point='true'
                     point-expand-enabled='true'
@@ -58,16 +93,21 @@
            on-zoom-end-function='dash.handleZoomViewersChart'
            axis-extent='dash.axisExtent'
            enable-zoom='true'
-           ng-if='dash.isLoaded'
+           ng-if='dash.viewersChartIsLoaded'
            chart-data='dash.viewersDatapoints'
            chart-columns='dash.viewersColumns'
-           chart-x='dash.datax'>
+           chart-x='dash.datax'
+           class='ngfade'>
       <chart-axis>
-        <chart-axis-x axis-id='x' axis-type='timeseries' axis-x-format="%Y-%m-%d %H:%M:%S">
-          <chart-axis-x-tick tick-format-time="%d. %b"/>
+        <chart-axis-x axis-id='x'
+                      axis-type='timeseries'
+                      axis-x-format='%Y-%m-%d %H:%M:%S'>
+          <chart-axis-x-tick tick-format-time='%d. %b'/>
         </chart-axis-x>
       </chart-axis>
-      <chart-tooltip show-tooltip='true' content-format-function='dash.contentViewersChartFunction' />
+      <chart-tooltip show-tooltip='true'
+                     content-format-function='dash.contentViewersChartFunction'
+                     position-function='dash.tooltipPositionFunction' />
       <chart-size chart-height='180' />
       <chart-events on-resized='dash.handleResized' />
       <chart-points point-radius='0'
