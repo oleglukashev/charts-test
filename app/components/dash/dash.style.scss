@@ -19,6 +19,8 @@
     bottom: 0;
     left: 0;
     z-index: 1;
+    border: 1px solid $light-grey;
+    background-color: #fff;
 
     .resize path {
       stroke: $light-grey;
@@ -27,6 +29,8 @@
   }
 
   .c3-tooltip-container {
+    width: 240px !important;
+
     .c3-tooltip-popup {
       padding: $padding;
       font-size: 12px;

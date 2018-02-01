@@ -41,3 +41,22 @@ hr {
 .form-control {
   font-weight: 300;
 }
+
+// ng-animate
+
+.ngfade.ng-enter {
+  transition:0.2s linear all;
+  opacity:0;
+}
+
+.ngfade.ng-enter.ng-enter-active {
+  opacity:1;
+}
+
+.ngfade.ng-leave {
+  transition:0.2s linear all;
+  opacity:1;
+}
+.ngfade.ng-leave.ng-leave-active {
+  opacity:0;
+}
