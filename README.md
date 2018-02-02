@@ -67,6 +67,10 @@ I made a fork of [c3-angular-diretives](https://github.com/jettro/c3-angular-dir
 
 [link](https://github.com/oleglukashev/c3-angular-directive)
 
+### Author
+
+email: incognitorus@gmail.com
+
 License
 ----
 
