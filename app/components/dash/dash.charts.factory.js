@@ -110,9 +110,16 @@ export default function DashChartsFactory(moment, AppConstants) {
     instance.contentYTickFunction = (d) => `${d} Gbps`;
     instance.tooltipPositionFunction = (data, width, height, element) => {
       const doc = instance.$window.document;
-      const chartOffsetX = doc.querySelector('#capacityChart').getBoundingClientRect().left;
-      const xElement = parseInt(element.getAttribute('x'));
-      return { top: 140, left: chartOffsetX + xElement };
+      const capacityChart = doc.querySelector('#capacityChart');
+      let left = 0;
+
+      if (capacityChart) {
+        const chartOffsetX = capacityChart.getBoundingClientRect().left;
+        const xElement = parseInt(element.getAttribute('x'));
+        left = chartOffsetX + xElement;
+      }
+
+      return { top: 140, left: left };
     };
 
     instance.handleResized = () => {
