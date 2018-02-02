@@ -4538,7 +4538,7 @@ return hooks;
 
 })));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(147)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(149)(module)))
 
 /***/ }),
 /* 1 */,
@@ -16252,6 +16252,10 @@ var _dash = __webpack_require__(139);
 
 var _dash2 = _interopRequireDefault(_dash);
 
+var _header = __webpack_require__(146);
+
+var _header2 = _interopRequireDefault(_header);
+
 var _services = __webpack_require__(144);
 
 var _services2 = _interopRequireDefault(_services);
@@ -16262,9 +16266,10 @@ var _app4 = _interopRequireDefault(_app3);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_angular2.default.module('app', [_angularUiRouter2.default, _angularUiBootstrap2.default, _angularMoment2.default, _angularAnimate2.default, _dash2.default, _c3AngularDirectives2.default, _services2.default, _app4.default]).config(_app2.default).run(function ($templateCache) {
+_angular2.default.module('app', [_angularUiRouter2.default, _angularUiBootstrap2.default, _angularMoment2.default, _angularAnimate2.default, _dash2.default, _c3AngularDirectives2.default, _services2.default, _app4.default]).config(_app2.default).controller('HeaderCtrl', _header2.default).run(function ($templateCache) {
+  $templateCache.put('header.view.html', __webpack_require__(147));
   $templateCache.put('dash.view.html', __webpack_require__(124));
-  $templateCache.put('layout.view.html', __webpack_require__(146));
+  $templateCache.put('layout.view.html', __webpack_require__(148));
 });
 
 /***/ }),
@@ -30950,9 +30955,16 @@ function DashChartsFactory(moment, AppConstants) {
     };
     instance.tooltipPositionFunction = function (data, width, height, element) {
       var doc = instance.$window.document;
-      var chartOffsetX = doc.querySelector('#capacityChart').getBoundingClientRect().left;
-      var xElement = parseInt(element.getAttribute('x'));
-      return { top: 140, left: chartOffsetX + xElement };
+      var capacityChart = doc.querySelector('#capacityChart');
+      var left = 0;
+
+      if (capacityChart) {
+        var chartOffsetX = capacityChart.getBoundingClientRect().left;
+        var xElement = parseInt(element.getAttribute('x'));
+        left = chartOffsetX + xElement;
+      }
+
+      return { top: 140, left: left };
     };
 
     instance.handleResized = function () {
@@ -31033,9 +31045,13 @@ var DashCtrl = function () {
       var _this = this;
 
       this.Bandwidth.loadData(this.fromDate.getTime(), this.toDate.getTime()).then(function (result) {
-        _this.calculateCapacityChartData(result);
+        if (result.status === 200) {
+          _this.calculateCapacityChartData(result);
+        } else {
+          alert('Bandwidth: load error. Try to logout and refresh page');
+        }
       }, function () {
-        alert('Bandwidth: load error');
+        alert('Bandwidth: load error. Try to logout and refresh page');
       });
     }
   }, {
@@ -31044,12 +31060,16 @@ var DashCtrl = function () {
       var _this2 = this;
 
       this.Audience.loadData(this.fromDate.getTime(), this.toDate.getTime()).then(function (result) {
-        _this2.calculateViewersChartData(result);
-        _this2.$timeout(function () {
-          _this2.loadBandwidth();
-        }, 500);
+        if (result.status === 200) {
+          _this2.calculateViewersChartData(result);
+          _this2.$timeout(function () {
+            _this2.loadBandwidth();
+          }, 500);
+        } else {
+          alert('Audience: load error. Try to logout and refresh page');
+        }
       }, function () {
-        alert('Audience: load error');
+        alert('Audience: load error. Try to logout and refresh page');
       });
     }
   }, {
@@ -34396,21 +34416,25 @@ var User = function () {
         }
 
         return deferred.resolve(true);
-      }, function () {
+      }, function (error) {
+        if (error.data) {
+          alert(error.data);
+        }
+
         return deferred.resolve(false);
       });
     }
   }, {
     key: 'logout',
     value: function logout() {
-      var _this2 = this;
-
       var sessionToken = this.$window.localStorage.getItem('session_token');
       var deferred = this.$q.defer();
 
       if (!sessionToken) {
         return deferred.resolve(false);
       }
+
+      this.$window.localStorage.removeItem('session_token');
 
       return this.$http({
         url: this.AppConstants.serverDomain + '/logout',
@@ -34419,7 +34443,6 @@ var User = function () {
           session_token: sessionToken
         }
       }).then(function () {
-        _this2.$window.localStorage.setItem('session_token', null);
         return deferred.resolve(true);
       }, function () {
         return deferred.resolve(false);
@@ -34434,12 +34457,74 @@ exports.default = User;
 
 /***/ }),
 /* 146 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = "<nav class='navbar navbar-expand-lg navbar-dark bg-dark'>\n  <div class='container'>\n    <a href='#' class='navbar-brand'>Charts-test</a>\n  </div>\n</nav>\n\n<div ui-view></div>"
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var HeaderCtrl = function () {
+  HeaderCtrl.$inject = ["User", "$window"];
+  function HeaderCtrl(User, $window) {
+    'ngInject';
+
+    _classCallCheck(this, HeaderCtrl);
+
+    this.User = User;
+    this.isLoggedIn = false;
+
+    var sessionToken = $window.localStorage.getItem('session_token');
+    if (sessionToken) {
+      this.isLoggedIn = true;
+    }
+  }
+
+  _createClass(HeaderCtrl, [{
+    key: 'logout',
+    value: function logout() {
+      var _this = this;
+
+      this.User.logout().then(function () {
+        _this.isLoggedIn = false;
+      });
+    }
+  }, {
+    key: 'auth',
+    value: function auth() {
+      var _this2 = this;
+
+      this.User.auth().then(function () {
+        _this2.isLoggedIn = true;
+      });
+    }
+  }]);
+
+  return HeaderCtrl;
+}();
+
+exports.default = HeaderCtrl;
 
 /***/ }),
 /* 147 */
+/***/ (function(module, exports) {
+
+module.exports = "<nav class='navbar navbar-expand-lg navbar-dark bg-dark'>\n  <div class='container'>\n    <a href='#' class='navbar-brand'>Charts-test</a>\n\n    <div class='collapse navbar-collapse'>\n      <ul class='navbar-nav ml-auto'>\n        <li class='nav-item'>\n          <a href='#' ng-if='header.isLoggedIn' class='nav-link' ng-click='header.logout()'>Logout</a>\n          <a href='#' ng-if='!header.isLoggedIn' class='nav-link' ng-click='header.auth()'>Login</a>\n        </li>\n      </ul>\n    </div>\n  </div>\n</nav>"
+
+/***/ }),
+/* 148 */
+/***/ (function(module, exports) {
+
+module.exports = "<div data-ng-include=\" 'header.view.html' \" ng-controller='HeaderCtrl as header' class='header'></div>\n<div ui-view></div>"
+
+/***/ }),
+/* 149 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -34467,11 +34552,11 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 148 */
+/* 150 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(125);
 
 
 /***/ })
-],[148]);
+],[150]);

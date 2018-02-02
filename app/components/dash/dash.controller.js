@@ -28,20 +28,28 @@ export default class DashCtrl {
 
   loadBandwidth() {
     this.Bandwidth.loadData(this.fromDate.getTime(), this.toDate.getTime()).then((result) => {
-      this.calculateCapacityChartData(result);
+      if (result.status === 200) {
+        this.calculateCapacityChartData(result);
+      } else {
+        alert('Bandwidth: load error. Try to logout and refresh page');
+      }
     }, () => {
-      alert('Bandwidth: load error');
+      alert('Bandwidth: load error. Try to logout and refresh page');
     });
   }
 
   loadAudience() {
     this.Audience.loadData(this.fromDate.getTime(), this.toDate.getTime()).then((result) => {
-      this.calculateViewersChartData(result);
-      this.$timeout(() => {
-        this.loadBandwidth();
-      }, 500);
+      if (result.status === 200) {
+        this.calculateViewersChartData(result);
+        this.$timeout(() => {
+          this.loadBandwidth();
+        }, 500);
+      } else {
+        alert('Audience: load error. Try to logout and refresh page');
+      }
     }, () => {
-      alert('Audience: load error');
+      alert('Audience: load error. Try to logout and refresh page');
     });
   }
 

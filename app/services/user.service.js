@@ -29,7 +29,13 @@ export default class User {
       }
 
       return deferred.resolve(true);
-    }, () => deferred.resolve(false));
+    }, (error) => {
+      if (error.data) {
+        alert(error.data);
+      }
+
+      return deferred.resolve(false);
+    });
   }
 
   logout() {
@@ -40,15 +46,14 @@ export default class User {
       return deferred.resolve(false);
     }
 
+    this.$window.localStorage.removeItem('session_token');
+
     return this.$http({
       url: `${this.AppConstants.serverDomain}/logout`,
       method: 'POST',
       data: {
         session_token: sessionToken,
       },
-    }).then(() => {
-      this.$window.localStorage.setItem('session_token', null);
-      return deferred.resolve(true);
-    }, () => deferred.resolve(false));
+    }).then(() => deferred.resolve(true), () => deferred.resolve(false));
   }
 }
