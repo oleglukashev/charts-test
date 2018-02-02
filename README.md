@@ -29,6 +29,7 @@ Install the dependencies and start the server.
 
 ```sh
 $ npm install
+$ npm install babel-loader babel-core webpack
 $ npm run dev
 ```
 
@@ -65,7 +66,7 @@ karma start karma.conf.js
 
 I made a fork of [c3-angular-diretives](https://github.com/jettro/c3-angular-directive) for c3.js library and fixxed there some buges and added new functional.
 
-[link](https://github.com/oleglukashev/c3-angular-directive)
+[link](https://github.com/oleglukashev/c3-angular-directive/commit/0784a7d1010e4921f8a262852bbd120dd6299970)
 
 ### Author
 
